@@ -2,10 +2,11 @@ package com.huang.left.controller;
 
 import com.huang.left.entity.User;
 import com.huang.left.service.UserService;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 @RestController
 @RequestMapping("user")
@@ -36,7 +37,29 @@ public class UserController {
     @PostMapping("/login")
     public User login(@RequestBody User user) {
         System.out.println("user = " + user);
-        return userService.login(user.getUsername(),user.getPassword());
+        return userService.login(user.getUsername(), user.getPassword());
+    }
+
+    @ApiOperation("通过id获得该id关注的列表")
+    @GetMapping("/getWatch/{id}")
+    public Set<User> getWatch(@PathVariable Long id) {
+        User user = userService.findById(id);
+        return user.getFollowed();
+    }
+
+    @ApiOperation("通过id获得关注该id的列表")
+    @GetMapping("/getFans/{id}")
+    public Set<User> getFans(@PathVariable Long id) {
+        User user = userService.findById(id);
+        return user.getFans();
+    }
+
+    @ApiOperation("关注")
+    @PostMapping("/watch/{userId}/{watchId}")
+    public Set<User> watch(@PathVariable("userId") Long userId,
+                      @PathVariable("watchId") Long watchId) {
+        User watch = userService.watch(userId, watchId);
+        return getWatch(watch.getId());
     }
 
 }

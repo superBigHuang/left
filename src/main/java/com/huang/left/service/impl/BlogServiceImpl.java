@@ -6,6 +6,7 @@ import com.huang.left.repository.BlogRepository;
 import com.huang.left.repository.UserRepository;
 import com.huang.left.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,22 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public Blog addBlog(Blog blog) {
+        return blogRepository.save(blog);
+    }
+
+    @Override
+    public Page<Blog> findAll(Pageable pageable) {
+        return  blogRepository.findAll(pageable);
+
+    }
+
+    @Override
+    public Long findBlogCount() {
+        return blogRepository.count();
+    }
+
+    @Override
+    public Blog updateBlog(Blog blog) {
         return blogRepository.save(blog);
     }
 }

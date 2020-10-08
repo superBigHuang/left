@@ -4,14 +4,13 @@ import com.huang.left.entity.Blog;
 import com.huang.left.entity.User;
 import com.huang.left.service.BlogService;
 import com.huang.left.service.UserService;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 @RestController
@@ -60,5 +59,36 @@ public class BlogController {
     public Blog addBlog(@RequestBody Blog blog) {
         return blogService.addBlog(blog);
     }
+
+
+    @ApiOperation("查找所有博客")
+    @GetMapping("/findAll/{page}")
+    public List<Blog> findAll(@PathVariable("page") Integer page) {
+        Page<Blog> all = blogService.findAll(PageRequest.of(page, PAGE_SIZE, Sort.by("createDate").descending()));
+        return all.hasContent() ? all.getContent() : null;
+    }
+
+    @ApiOperation("获得博客数量")
+    @GetMapping("/findCount")
+    public Long findCount() {
+        return blogService.findBlogCount();
+    }
+
+    @ApiOperation("增加点赞数")
+    @GetMapping("/addAgreeNumber/{id}")
+    public Blog addAgreeNumber(@PathVariable Long id) {
+        Blog blog = blogService.findById(id);
+        blog.setAgreeNumber(blog.getAgreeNumber() + 1);
+        return blogService.updateBlog(blog);
+    }
+
+    @ApiOperation("减少点赞数")
+    @GetMapping("/subAgreeNumber/{id}")
+    public Blog subAgreeNumber(@PathVariable Long id) {
+        Blog blog = blogService.findById(id);
+        blog.setAgreeNumber(blog.getAgreeNumber() - 1);
+        return blogService.updateBlog(blog);
+    }
+
 
 }

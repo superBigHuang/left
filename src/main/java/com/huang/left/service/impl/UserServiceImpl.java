@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Id;
 import java.util.Optional;
 
 @Service
@@ -34,5 +35,14 @@ public class UserServiceImpl implements UserService {
     public User findById(Long id) {
         Optional<User> byId = userRepository.findById(id);
         return byId.isPresent() ? byId.get() : null;
+    }
+
+    @Override
+    public User watch(Long fansId, Long watchId) {
+        User user = findById(fansId);
+        User user2 = findById(watchId);
+        user.getFollowed().add(user2);
+        User save = userRepository.save(user);
+        return save;
     }
 }

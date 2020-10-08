@@ -1,7 +1,9 @@
 package com.huang.left.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.huang.left.enums.Gender;
 import lombok.Data;
 import lombok.Getter;
@@ -32,9 +34,11 @@ public class User implements Serializable {
     private String introduction;
     private String headImg;
 
+    @JsonBackReference(value = "userBlogs")
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Blog> blogs = new ArrayList<>();
 
+    @JsonBackReference(value = "userComments")
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Comment> comments = new HashSet<>();
 
@@ -42,7 +46,6 @@ public class User implements Serializable {
 
     // 被关注的人
     @JsonIgnore
-    @JsonIgnoreProperties({"fans"})
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
     private Set<User> followed = new HashSet<>();
     // 粉丝
@@ -65,8 +68,6 @@ public class User implements Serializable {
                 ", birthday=" + birthday +
                 ", introduction='" + introduction + '\'' +
                 ", headImg='" + headImg + '\'' +
-                ", blogs=" + blogs +
-                ", comments=" + comments +
                 '}';
     }
 }

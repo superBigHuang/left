@@ -31,4 +31,12 @@ public interface UserService {
      * @return 用户信息
      */
     User findById(Long id);
+
+    /**
+     * 关注
+     * @param fansId 关注者
+     * @param watchId 被关注者
+     * @return 随便返回点
+     */
+    User watch(Long fansId,Long watchId);
 }

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import sun.text.normalizer.UBiDiProps;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +52,30 @@ class BlogRepositoryTest {
         List<Blog> byUser_id = blogRepository.findByContent("1");
         for (Blog blog : byUser_id) {
             System.out.println("blog = " + blog);
+        }
+    }
+
+    @Test
+    public void find4() {
+        Page<Blog> all = blogRepository.findAll(PageRequest.of(0, 4));
+        Iterator<Blog> iterator = all.iterator();
+        for (Blog blog : all) {
+            System.out.println("blog = " + blog);
+        }
+        int numberOfElements = all.getNumberOfElements();
+        System.out.println("numberOfElements = " + numberOfElements);
+        List<Blog> content = all.getContent();
+        for (Blog blog : content) {
+            System.out.println("blog2 = " + blog);
+        }
+    }
+
+    @Test
+    public void testSplit() {
+        String s = "https://i.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_ebchx3WwzbM-Z4_KC_LeLBWr5LZMaAkWkF68;https://i.picsum.photos/id/1003/1181/1772.jpg?hmac=oN9fHMXiqe9Zq2RM6XT-RVZkojgPnECWwyEF1RvvTZk;https://i.picsum.photos/id/1004/5616/3744.jpg?hmac=Or7EJnz-ky5bsKa9_frdDcDCR9VhCP8kMnbZV6-WOrY";
+        String[] split = s != null ? s.split(";") : null;
+        for (String s1 : split) {
+            System.out.println("s1 = " + s1);
         }
     }
 

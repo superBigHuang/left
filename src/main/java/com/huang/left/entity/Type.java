@@ -1,10 +1,12 @@
 package com.huang.left.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -14,7 +16,7 @@ import java.util.*;
 @Setter
 @Entity
 @Table()
-public class Type {
+public class Type implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
@@ -28,6 +30,8 @@ public class Type {
     @Temporal(TemporalType.DATE)
     private Date createTime;
 
+
+    @JsonBackReference(value = "typeBlogs")
     @OneToMany(mappedBy = "type",fetch = FetchType.EAGER)
     private Set<Blog> blogs = new HashSet<>();
 

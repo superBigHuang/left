@@ -2,6 +2,7 @@ package com.huang.left.service;
 
 import com.huang.left.entity.Blog;
 import com.huang.left.entity.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -44,4 +45,23 @@ public interface BlogService {
      * @return 新增好的博客信息
      */
     Blog addBlog(Blog blog);
+
+    /**
+     * 查询所有博客
+     * @return 所有博客信息
+     */
+    Page<Blog> findAll(Pageable pageable);
+
+    /**
+     * 获得博客数量
+     * @return  博客数量
+     */
+    Long findBlogCount();
+
+    /**
+     * 修改博客
+     * @param blog 修改好的博客
+     * @return 修改好的博客
+     */
+    Blog updateBlog(Blog blog);
 }
