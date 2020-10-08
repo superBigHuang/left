@@ -1,7 +1,14 @@
 <template>
   <div>
     <el-card class="main-font">
+      <el-alert v-if="flag"
+          title="用户名或密码错误"
+          type="error"
+          center
+          show-icon>
+      </el-alert>
       <el-tabs v-model="activeName">
+
         <el-tab-pane label="登录" name="first">
           <el-form ref="form" label-width="80px">
             <el-form-item label="用户名">
@@ -113,6 +120,7 @@ export default {
         birthday: '',
         headImg: '',
       },
+      flag: false,
       a: 1,
       ruleForm2: {
         pass: '',
@@ -142,7 +150,14 @@ export default {
     ,
     login() {
       axios.post("http://localhost:8080/user/login/", this.user).then(response => {
-        console.log(response)
+        if (response.data === "") {
+          this.flag = true;
+        } else {
+          this.flag = false;
+          this.user = response.data
+          window.sessionStorage.setItem("userInfo",JSON.stringify(this.user))
+          this.$router.push("/")
+        }
       })
     }
     ,

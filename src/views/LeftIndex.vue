@@ -4,7 +4,7 @@
 
     <!--文章内容-->
 
-    <el-card class="box-card main-font" style="margin-top: 20px;width: 80%" v-for="(item ,index) in user" :key="index">
+    <el-card class="box-card main-font" style="margin-top: 20px;width: 80%" v-for="(item ,index) in blogs" :key="index">
       <!--头像 用户名-->
       <div class="flex_center">
         <!--            <el-row type="flex" justify="left">-->
@@ -12,24 +12,24 @@
         <div class="head_content_flex">
 
           <div class="round-icon">
-            <img :src="item.headImg">
+            <img :src="item.user.headImg">
           </div>
 
           <div>
             <el-alert
-                v-bind:title="item.username"
+                v-bind:title="item.user.username"
                 type="success"
                 :closable="false"
                 style="background: white"
-                v-bind:description="item.userIntroduction"
+                v-bind:description="item.user.introduction"
             >
             </el-alert>
           </div>
         </div>
 
 
-        <div class="grid-content bg-purple">
-          <el-button round><i class="el-icon-circle-plus-outline"></i>关注</el-button>
+        <div class="grid-content bg-purple" v-if="showButton(item.user.id)">
+          <el-button round @click="watch(item.user.id)"><i class="el-icon-circle-plus-outline"></i>关注</el-button>
         </div>
         <!--              </el-col>-->
         <!--            </el-row>-->
@@ -41,7 +41,7 @@
             <span>{{ item.content }}</span>
           </div>
           <el-carousel :interval="5000" arrow="always" style="width: 80%" class="main-font">
-            <el-carousel-item v-for="(item2,index2) in item.imgs" :key="index2">
+            <el-carousel-item v-for="(item2,index2) in item.urls" :key="index2">
               <img :src="item2">
             </el-carousel-item>
           </el-carousel>
@@ -55,14 +55,14 @@
       <div>
         <el-row type="flex" justify="center">
           <el-col :span="3">
-            <el-button icon="el-icon-share">{{ item.share }}</el-button>
+            <el-button icon="el-icon-share">{{ item.agreeNumber }}</el-button>
           </el-col>
           <el-col :span="3">
-            <el-button icon="el-icon-edit" @click="comment(item.contentId)">{{ item.comment }}</el-button>
+            <el-button icon="el-icon-edit" @click="comment(item.contentId)">{{ item.comments.length }}</el-button>
           </el-col>
           <el-col :span="5">
-            <el-button icon="el-icon-arrow-up">{{ item.agree }}</el-button>
-            <el-button icon="el-icon-arrow-down"></el-button>
+            <el-button icon="el-icon-arrow-up" @click="addNumber(index)">{{ item.agreeNumber }}</el-button>
+            <el-button icon="el-icon-arrow-down" @click="subNumber(index)"></el-button>
           </el-col>
         </el-row>
       </div>
@@ -74,9 +74,11 @@
       <el-row type="flex" justify="center">
         <el-col :span="8">
           <el-pagination
-              background
-              layout="prev, pager, next"
-              :total="1000">
+              @current-change="getPage"
+              :current-page.sync="currentPage1"
+              :page-size="5"
+              layout="total, prev, pager, next"
+              :total="blogCount">
           </el-pagination>
         </el-col>
       </el-row>
@@ -85,7 +87,8 @@
     <!--发布新话题-->
     <div class="box-fixed">
       <el-tooltip class="item" effect="dark" content="发布新内容~" placement="left">
-        <el-button round type="primary" @click="dialogVisible = true"><i class="el-icon-circle-plus-outline"></i></el-button>
+        <el-button round type="primary" @click="dialogVisible = true"><i class="el-icon-circle-plus-outline"></i>
+        </el-button>
       </el-tooltip>
     </div>
 
@@ -99,19 +102,20 @@
       <div>
 
         <el-autocomplete
-            prefix-icon="el-icon-upload"
-            class="inline-input"
             v-model="state1"
             :fetch-suggestions="querySearch"
             placeholder="请选择话题"
-            @select="handleSelect"
-        ></el-autocomplete>
+            @select="handleSelect">
+          <template slot-scope="props">
+            <div>{{ props.item.typeName }}</div>
+          </template>
+        </el-autocomplete>
 
         <el-input
             style="margin-top: 30px"
             placeholder="请输入内容"
             prefix-icon="el-icon-edit"
-            v-model="input21"
+            v-model="blog.content"
             clearable
             maxlength="100"
         >
@@ -121,7 +125,7 @@
             :rows="2"
             style="margin-top: 30px"
             placeholder="请输入图片url，多个url用;分割"
-            v-model="input12"
+            v-model="blog.imgUrl"
             clearable
         >
         </el-input>
@@ -132,7 +136,7 @@
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="content">确 定</el-button>
       </span>
-  </el-dialog>
+    </el-dialog>
 
   </div>
 
@@ -143,20 +147,31 @@
 export default {
   name: "LeftIndex",
   data() {
+    var userInfo = JSON.parse(window.sessionStorage.getItem("userInfo"));
+    var aData = new Date();
+    var nowDate = aData.getFullYear() + "-" + (aData.getMonth() + 1) + "-" + aData.getDate();
     return {
-      restaurants: [],
+      currentPage1: 1,
+      blogCount: 1,
+      blog: {
+        content: "",
+        createDate: nowDate,
+        agreeNumber: 0,
+        imgUrl: "",
+        type: {
+          id: ""
+        },
+        user: {
+          id: userInfo.id,
+        }
+      },
       state1: '',
-      input12: '',
-      input21: '',
       dialogVisible: false,
-      input10: '',
-      activeIndex: '2',
-
-      user: [
+      types: [],
+      blogs: [
         {
           contentId: 3,
           username: "张三",
-          headImg: "https://i.picsum.photos/id/1005/5760/3840.jpg?hmac=2acSJCOwz9q_dKtDZdSB-OIK1HUcwBeXco_RMMTUgfY",
           userIntroduction: "张三是个好人",
           content: "我要个性网的头像大全频道,您可以发布、寻找各种男生女生头像、情侣头像、带字等个性的QQ头像。",
           imgs: [
@@ -176,7 +191,6 @@ export default {
         {
           contentId: 1,
           username: "李四",
-          headImg: "https://i.picsum.photos/id/1009/5000/7502.jpg?hmac=Uj6crVILzsKbyZreBjHuMiaq_-n30qoHjqP0i7r30r8",
           userIntroduction: "李四牛逼奥",
           content: "Here you can view all the images Lorem Picsum provides.\n" +
               "\n" +
@@ -198,7 +212,6 @@ export default {
         {
           contentId: 2,
           username: "王五",
-          headImg: "https://i.picsum.photos/id/1009/5000/7502.jpg?hmac=Uj6crVILzsKbyZreBjHuMiaq_-n30qoHjqP0i7r30r8",
           userIntroduction: "王五是个好人",
           content: "我要个性网的头像大全频道,您可以发布、寻找各种男生女生头像、情侣头像、带字等个性的QQ头像。",
           imgs: [
@@ -215,10 +228,56 @@ export default {
           agree: 123
 
         },
-      ]
+      ],
+      watched: [],
     }
   },
   methods: {
+    watch(watchId) {
+      let fansId = this.blog.user.id
+      axios.post("http://localhost:8080/user/watch/" + fansId + "/" + watchId).then(response => {
+        if (response.data != null){
+          this.watched = response.data
+          const h = this.$createElement;
+          this.$notify({
+            title: 'OMG!!!!!',
+            message: h('i', { style: 'color: teal'}, '关注成功了嗷')
+          });
+        } else {
+          const h = this.$createElement;
+          this.$notify({
+            title: 'emmmm.....',
+            message: h('i', { style: 'color: teal'}, '好像出现了点问题')
+          });
+        }
+      })
+    },
+    showButton(a) {
+      for (let i = 0; i < this.watched.length; i++) {
+        if ((a == this.watched[i].id) || (a == this.blog.user.id)) {
+          return false
+        }
+      }
+      return true
+    },
+    addNumber(pageId) {
+      this.blogs[pageId].agreeNumber += 1
+      axios.get("http://localhost:8080/blog/addAgreeNumber/" + this.blogs[pageId].id).then(response => {
+        this.blogs[pageId] = response.data
+      })
+    },
+    subNumber(pageId) {
+      this.blogs[pageId].agreeNumber -= 1
+      axios.get("http://localhost:8080/blog/subAgreeNumber/" + this.blogs[pageId].id).then(response => {
+        this.blogs[pageId] = response.data
+        console.log(this.blogs)
+      })
+    },
+    getPage(val) {
+      axios.get("http://localhost:8080/blog/findAll/" + (val - 1)).then(response => {
+        this.blogs = response.data
+      })
+    },
     comment(id) {
       this.$router.push({path: "/content", query: {id: id}})
     },
@@ -227,44 +286,63 @@ export default {
           .then(_ => {
             done();
           })
-          .catch(_ => {});
+          .catch(_ => {
+          });
     },
     content() {
-      console.log(this.input12)
-      console.log(this.input21)
+      axios.post("http://localhost:8080/blog/addBlog/", this.blog).then(response => {
+        if (response.data != null) {
+          this.blog.imgUrl = ""
+          this.blog.content = ""
+          this.blog.type.id = ""
+          const h = this.$createElement;
+
+          this.$notify({
+            title: '嘿嘿嘿',
+            message: h('i', {style: 'color: teal'}, '发表成功！！')
+          });
+          axios.get("http://localhost:8080/blog/findCount").then(response => {
+            this.blogCount = response.data
+          })
+        }
+      })
       this.dialogVisible = false
     },
     querySearch(queryString, cb) {
-      var restaurants = this.restaurants;
+      var restaurants = this.types;
       var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
       // 调用 callback 返回建议列表的数据
       cb(results);
     },
     createFilter(queryString) {
       return (restaurant) => {
-        return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        return (restaurant.typeName.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
       };
     },
-    loadAll() {
-      return [
-        {"value": "测试1",id:"1"},
-        {"value": "测试2",id:"2"},
-        {"value": "测试3",id:"3"},
-        {"value": "测试4",id:"4"},
-        {"value": "测试5",id:"5"},
-        {"value": "测试6",id:"6"},
-        {"value": "测试7",id:"7"},
-        {"value": "测试8",id:"8"},
 
-      ]
-    },
     handleSelect(item) {
-      console.log(item.id);
-    }
+      this.state1 = item.typeName
+      this.blog.type.id = item.id
+      console.log(this.blog)
+    },
+
+
   },
-  mounted() {
-    this.restaurants = this.loadAll();
+  created() {
+    axios.get("http://localhost:8080/type/findAll").then(response => {
+      this.types = response.data
+    })
+    axios.get("http://localhost:8080/blog/findAll/0").then(response => {
+      this.blogs = response.data
+    })
+    axios.get("http://localhost:8080/blog/findCount").then(response => {
+      this.blogCount = response.data
+    })
+    axios.get("http://localhost:8080/user/getWatch/" + this.blog.user.id).then(response => {
+      this.watched = response.data
+    })
   }
+
 }
 </script>
 
@@ -289,10 +367,6 @@ export default {
   overflow: hidden;
 }
 
-.image {
-  width: 500px;
-  display: block;
-}
 
 .flex_center {
   display: flex;
