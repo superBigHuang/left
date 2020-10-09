@@ -7,6 +7,7 @@ import LeftContent from "@/views/LeftContent";
 import LeftSearch from "@/views/LeftSearch";
 import LeftUserInfo from "@/views/LeftUserInfo";
 import LeftLogin from "@/views/LeftLogin";
+import LeftUserPanel from "@/views/LeftUserPanel";
 
 Vue.use(VueRouter)
 
@@ -39,6 +40,11 @@ const routes = [
   {
     path: "/login",
     component: LeftLogin,
+    show: false
+  },
+  {
+    path: "/panel",
+    component: LeftUserPanel,
     show: false
   },
 

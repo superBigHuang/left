@@ -1,10 +1,11 @@
 <template class="bodyBg">
   <div id="app">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_2117702_vi2iknhluzs.css">
     <el-row>
       <el-menu
           mode="horizontal" @select="handleSelect" :default-active="activeIndex" router>
         <el-col :span="6">
-          <el-menu-item index="1" style="color: blue;font-size: large" @click="open"><i class="el-icon-back"></i>最左
+          <el-menu-item index="1" style="color: blue;font-size: large" @click="open"><i class="iconfont iconbiaoda"></i>最左
           </el-menu-item>
         </el-col>
         <el-col :span="6">
