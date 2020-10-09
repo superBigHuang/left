@@ -41,7 +41,7 @@
               </div>
             </el-form-item>
             <el-form-item label="性别">
-              <el-radio-group v-model="a" @change="test">
+              <el-radio-group v-model="a" >
                 <el-radio :label="0">男</el-radio>
                 <el-radio :label="1">女</el-radio>
                 <el-radio :label="2">外星人</el-radio>
@@ -174,9 +174,6 @@ export default {
         this.activeName = 'first'
       }
     },
-    test() {
-      console.log(this.user.gender = this.a)
-    }
   }
 }
 </script>
