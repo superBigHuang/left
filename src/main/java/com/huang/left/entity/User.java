@@ -42,7 +42,7 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Comment> comments = new HashSet<>();
 
-    @ManyToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private Set<Type> types = new HashSet<>();
 
     // 用户内连关系
