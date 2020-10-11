@@ -11,5 +11,5 @@ public interface TypeRepository extends JpaRepository<Type,Long>, JpaSpecificati
     Type findByTypeName(String typeName);
 
     // 根据用户id查询关注的类型
-    List<Type> findByUser_Id(Long id);
+    List<Type> findByUsers_id(Long id);
 }
