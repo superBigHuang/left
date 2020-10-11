@@ -64,4 +64,9 @@ public interface BlogService {
      * @return 修改好的博客
      */
     Blog updateBlog(Blog blog);
+
+    /**
+     * 获得所有博客不排序
+     */
+    List<Blog> findAll();
 }
