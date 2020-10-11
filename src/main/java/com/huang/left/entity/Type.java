@@ -35,6 +35,10 @@ public class Type implements Serializable {
     @OneToMany(mappedBy = "type",fetch = FetchType.EAGER)
     private Set<Blog> blogs = new HashSet<>();
 
+    @JsonBackReference(value = "typeUsers")
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<User> users = new HashSet<>();
+
     @Override
     public String toString() {
         return "Type{" +
