@@ -111,6 +111,7 @@ export default {
     };
 
     return {
+      active: 0,
       user: {
         id: '',
         username: '',
