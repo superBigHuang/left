@@ -39,4 +39,5 @@ public interface UserService {
      * @return 随便返回点
      */
     User watch(Long fansId,Long watchId);
+
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     // 判断用户名是否存在
@@ -14,5 +15,5 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     // 通过用户名密码登录
     User findByUsernameAndPassword(String username, String password);
 
-    // 关注
+
 }
