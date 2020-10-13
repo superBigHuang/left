@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("type")
@@ -32,10 +33,23 @@ public class TypeController {
     public Type save(@RequestBody Type type) {
         return typeService.saveType(type);
     }
+
     @ApiOperation("通过名称查找话题")
     @GetMapping("/findByName/{name}")
     public Type findByName(@PathVariable String name) {
         return typeService.findByName(name);
+    }
+
+    @ApiOperation("获得排序好的话题")
+    @GetMapping("/findBySortType")
+    public Map<String,List<Type>>  findBySortType() {
+        return typeService.findAllSortType();
+    }
+
+    @ApiOperation("通过user_id获得关注的type")
+    @GetMapping("/findByUserId/{id}")
+    public List<Type> findByUserId( @PathVariable Long id) {
+        return typeService.findByUserId(id);
     }
 
 
