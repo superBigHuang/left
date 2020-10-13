@@ -16,7 +16,7 @@
                 :disable-transitions="false"
                 @close="handleClose(tag)"
                 style="margin: 30px">
-              {{ tag }}
+              {{ tag.typeName }}
             </el-tag>
 
           </el-card>
@@ -25,28 +25,6 @@
     </div>
 
 
-    <!--猜你喜欢-->
-    <div class="main-font">
-      <el-container>
-        <el-header style="margin-top: 30px">
-          <span style="color: blue;font-size: larger;text-align: center">猜你喜欢</span>
-        </el-header>
-        <el-main>
-          <el-card>
-            <el-tag
-                :key="tag"
-                v-for="tag in dynamicTags"
-                closable
-                :disable-transitions="false"
-                @close="handleClose(tag)"
-                style="margin: 30px">
-              {{ tag }}
-            </el-tag>
-
-          </el-card>
-        </el-main>
-      </el-container>
-    </div>
 
     <!--所有-->
     <div class="main-font">
@@ -57,8 +35,8 @@
         <el-main>
           <el-card >
             <div v-for="(item,index) in allTopic" :key="index">
-              <h1 style="margin: 30px">{{item.type}}</h1>
-              <el-tag style="margin: 30px" v-for="(item2,index2) in item.children" :key="index2">{{item2}}</el-tag>
+              <h1 style="margin: 30px">{{index}}</h1>
+              <el-tag style="margin: 30px" v-for="(item2,index2) in item" :key="index2">{{item2.typeName}}</el-tag>
             </div>
           </el-card>
         </el-main>
@@ -73,7 +51,9 @@
 export default {
   name: "LeftTopic",
   data() {
+    var userInfo = JSON.parse(window.sessionStorage.getItem("userInfo"));
     return {
+      user : userInfo,
       input10: '',
       activeIndex: '3',
       tags: [
@@ -99,6 +79,14 @@ export default {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
     },
 
+  },
+  created() {
+    axios.get("http://localhost:8080/type/findBySortType").then(response => {
+      this.allTopic = response.data
+    })
+    axios.get("http://localhost:8080/type/findByUserId/"+this.user.id).then(response => {
+      this.dynamicTags = response.data
+    })
   }
 }
 </script>
