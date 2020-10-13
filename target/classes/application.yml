@@ -13,3 +13,7 @@ spring:
     host: localhost
     database: 0
     port: 6379
+    jedis:
+      pool:
+        max-idle: 300
+        max-wait: 3000

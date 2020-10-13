@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * 项目一启动就执行typeRedis中的一些方法
  */
-@Component
+//@Component
 public class TypeAutoStart implements CommandLineRunner {
 
     @Autowired
