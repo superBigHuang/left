@@ -1,6 +1,7 @@
 package com.huang.left.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class Comment implements Serializable {
     private Long id;
     private String content;
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     private Long agreeCount;
 
@@ -32,7 +34,6 @@ public class Comment implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     private Blog blog;
 
-    @JsonBackReference(value = "commentUser")
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
