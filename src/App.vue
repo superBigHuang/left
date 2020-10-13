@@ -11,10 +11,10 @@
         <el-col :span="6">
           <el-row>
             <el-col :span="8">
-              <el-menu-item index="/index">关注</el-menu-item>
+              <el-menu-item index="/watch">关注</el-menu-item>
             </el-col>
             <el-col :span="8">
-              <el-menu-item index="/">话题</el-menu-item>
+              <el-menu-item index="/topic">话题</el-menu-item>
             </el-col>
             <el-col :span="8">
               <el-menu-item index="/index">推荐</el-menu-item>
