@@ -11,7 +11,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("blog")
@@ -37,9 +39,20 @@ public class BlogController {
     public List<Blog> findByWatch(@PathVariable("id") Long id,
                                   @PathVariable("page") Integer page) {
         User user = userService.findById(id);
+        Set<User> followed = user.getFollowed();
         // 每次查询5条，按照时间排序
-        return blogService.findByWatch(user, PageRequest.of(page, PAGE_SIZE, Sort.by("createDate").descending()));
+        return blogService.findByWatch(followed, PageRequest.of(page, PAGE_SIZE, Sort.by("createDate").descending()));
     }
+
+    @ApiOperation("查询关注的人的所有博客的条数")
+    @GetMapping("/findByWatchCount/{id}")
+    public Long findByWatch(@PathVariable("id") Long id) {
+        User user = userService.findById(id);
+        Set<User> followed = user.getFollowed();
+        // 每次查询5条，按照时间排序
+        return blogService.findCountByUser(followed);
+    }
+
 
     @ApiOperation("通过内容查找")
     @GetMapping("/findByContent/{content}")

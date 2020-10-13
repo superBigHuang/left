@@ -5,7 +5,9 @@ import com.huang.left.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface BlogService {
 
@@ -18,11 +20,11 @@ public interface BlogService {
 
     /**
      * 查找关注者的博客
-     * @param user 用户信息
+     * @param users 用户信息
      * @param pageable 分页
      * @return 查找到的所有博客
      */
-    List<Blog> findByWatch(User user, Pageable pageable);
+    List<Blog> findByWatch(Collection<User> users, Pageable pageable);
 
     /**
      * 通过博客内容查找
@@ -69,4 +71,12 @@ public interface BlogService {
      * 获得所有博客不排序
      */
     List<Blog> findAll();
+
+    /**
+     * 查询指定用户组发布的博客数量
+     * @param users 用户组
+     * @return
+     */
+    Long findCountByUser(Set<User> users);
+
 }
