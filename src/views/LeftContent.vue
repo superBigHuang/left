@@ -7,16 +7,16 @@
         <div class="head_content_flex">
 
           <div class="round-icon">
-            <img :src="content.headImg">
+            <img :src="content.user.headImg">
           </div>
 
           <div>
             <el-alert
-                v-bind:title="content.username"
+                v-bind:title="content.user.username"
                 type="success"
                 :closable="false"
                 style="background: white"
-                v-bind:description="content.userIntroduction"
+                v-bind:description="content.user.introduction"
             >
             </el-alert>
           </div>
@@ -26,8 +26,6 @@
         <div class="grid-content bg-purple">
           <el-button round><i class="el-icon-circle-plus-outline"></i>关注</el-button>
         </div>
-        <!--              </el-col>-->
-        <!--            </el-row>-->
       </div>
 
       <!--内容-->
@@ -37,7 +35,7 @@
             <span>{{ content.content }}</span>
           </div>
           <el-carousel :interval="5000" arrow="always" style="width: 80%" class="main-font">
-            <el-carousel-item v-for="(item2,index2) in content.imgs" :key="index2">
+            <el-carousel-item v-for="(item2,index2) in content.urls" :key="index2">
               <img :src="item2">
             </el-carousel-item>
           </el-carousel>
@@ -51,13 +49,13 @@
       <div>
         <el-row type="flex" justify="center">
           <el-col :span="3">
-            <el-button icon="el-icon-share">{{ content.share }}</el-button>
+            <el-button icon="el-icon-share">{{ content.comments.length }}</el-button>
           </el-col>
           <el-col :span="3">
-            <el-button icon="el-icon-edit">{{ content.comment }}</el-button>
+            <el-button icon="el-icon-edit">{{ content.comments.length }}</el-button>
           </el-col>
           <el-col :span="5">
-            <el-button icon="el-icon-arrow-up">{{ content.agree }}</el-button>
+            <el-button icon="el-icon-arrow-up">{{ content.agreeNumber }}</el-button>
             <el-button icon="el-icon-arrow-down"></el-button>
           </el-col>
         </el-row>
@@ -85,7 +83,7 @@
         <!--网名 评论内容 赞 踩-->
         <div class="flex_center" v-for="(item,index) in comments" :key="index">
           <div class="head_content_flex">
-            <a href="#">{{ item.username }}</a>
+            <a href="#">{{ item.user.username }}</a>
             <div>
               <el-alert
                   v-bind:title="item.content"
@@ -96,11 +94,12 @@
               </el-alert>
             </div>
             <div>
-              <el-tag>{{ item.date }}</el-tag>
+
+              <el-tag>{{ item.createTime }}</el-tag>
             </div>
           </div>
           <div class="grid-content bg-purple">
-            <a href="#" style="padding-right: 30px"><i class="el-icon-caret-top"></i>{{ item.agree }}</a>
+            <a href="#" style="padding-right: 30px"><i class="el-icon-caret-top"></i>{{ item.agreeCount }}</a>
             <a href="#"><i class="el-icon-caret-bottom"></i></a>
           </div>
         </div>
@@ -125,11 +124,11 @@
           clearable
           maxlength="50"
           placeholder="请输入评论"
-          v-model="input2">
+          v-model="comment.content">
       </el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addComment(content.id)" >确 定</el-button>
       </span>
     </el-dialog>
 
@@ -141,7 +140,26 @@
 export default {
   name: "LeftContent",
   data() {
+    var userInfo = JSON.parse(window.sessionStorage.getItem("userInfo"));
+    var aData = new Date();
+    var nowDate = aData.getFullYear() + "-"
+        + (aData.getMonth() + 1) + "-"
+        + aData.getDate() + " " +
+        aData.getHours() + ":" + aData.getMinutes() +":"+aData.getSeconds();
     return {
+      comment: {
+        content: '',
+        createTime: nowDate,
+        agreeCount: 0,
+        user: {
+          id: userInfo.id
+        },
+        blog: {
+          id: ""
+        }
+      },
+      mode: 'time',
+      blogId: '',
       input10: '',
       activeIndex: '3',
       activeName: 'second',
@@ -191,7 +209,31 @@ export default {
           })
           .catch(_ => {
           });
+    },
+    addComment(id) {
+        this.comment.blog.id = id
+        axios.post("http://localhost:8080/comment/addComment",this.comment).then(response => {
+          if (response.data != "" || response.data != null) {
+            this.dialogVisible = false
+            this.$message('回复成功');
+            axios.get("http://localhost:8080/comment/findByBlogId/" + this.blogId + "/0/" + this.mode).then(response => {
+              this.comments = response.data
+              console.log(response.data)
+            })
+          }
+        })
     }
+  },
+  created() {
+    this.blogId = this.$route.query.id
+    axios.get("http://localhost:8080/blog/findById/" + this.blogId).then(response => {
+      this.content = response.data
+      console.log(this.content)
+    })
+    axios.get("http://localhost:8080/comment/findByBlogId/" + this.blogId + "/0/" + this.mode).then(response => {
+      this.comments = response.data
+      console.log(response.data)
+    })
   }
 }
 </script>
